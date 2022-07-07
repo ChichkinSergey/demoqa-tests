@@ -8,7 +8,7 @@ class student:
     last_name = "Gandhi"
     user_email = "mahatma@test.tst"
     gender = 1 # 1 = Male, 2 = Female, 3 = Other
-    phone_number = "1234567890"
+    mobile_number = "1234567890"
     picture_name = 'pic.jpeg'
     current_address = "Oak Street 8"
     state = "Uttar Pradesh"
@@ -68,32 +68,36 @@ def test_student_registration_form():
     browser.element("#lastName").type(student.last_name)
     browser.element("#userEmail").type(student.user_email)
 
-    browser.element(f"label[for='gender-radio-{student.gender}']").click() #
+    male = browser.element(f"[for*='gender-radio-{student.gender}']")
+    male.click()
 
-    browser.element("#userNumber").type(student.phone_number)
+    browser.element("#userNumber").type(student.mobile_number)
 
     browser.element("#dateOfBirthInput").click()
     browser.element(".react-datepicker__year-select").element(f"[value='{student.birth_year}']").click()
     browser.element(".react-datepicker__month-select").element(f"[value='{student.birth_month}']").click()
     browser.element(f".react-datepicker__day--00{student.birth_day}").click()
 
-    browser.element("#subjectsContainer input").type(student.subject_math).press_enter()
-    browser.element("#subjectsContainer input").type(student.subject_computer_science).press_enter()
+    browser.element("#subjectsInput").type(student.subject_math).press_enter()
+    browser.element("#subjectsInput").type(student.subject_computer_science).press_enter()
 
-    browser.element("label[for='hobbies-checkbox-1']").click()
-    browser.element("label[for='hobbies-checkbox-2']").click()
-    browser.element("label[for='hobbies-checkbox-3']").click()
+    hobbies_sport = browser.element("label[for='hobbies-checkbox-1']")
+    hobbies_sport.click()
+    hobbies_reading = browser.element("label[for='hobbies-checkbox-2']")
+    hobbies_reading.click()
+    hobbies_music = browser.element("label[for='hobbies-checkbox-3']")
+    hobbies_music.click()
 
     browser.element('#uploadPicture').send_keys(path_to(student.picture_name))
-
-    #browser.element('#uploadPicture').send_keys(os.path.abspath(f'../resources/{student.picture_name}'))
 
     browser.element("#currentAddress").type(student.current_address)
 
     browser.element("#state").element("input").perform(command.js.scroll_into_view)
-    browser.element("#state").element("input").type(student.state).press_tab()
+    state_uttar_pradesh = browser.element("#state").element("input").type(student.state)
+    state_uttar_pradesh.press_tab()
 
-    browser.element("#city input").type(student.city).press_enter()
+    city_lucknow = browser.element("#city input").type(student.city)
+    city_lucknow.press_enter()
 
     browser.element("#submit").perform(command.js.click)
 
@@ -107,7 +111,7 @@ def test_student_registration_form():
     cells_of_row(1).should(have.texts('Student Name', f'{student.first_name} {student.last_name}'))
     cells_of_row(2).should(have.texts('Student Email', student.user_email))
     cells_of_row(3).should(have.texts('Gender', gender))
-    cells_of_row(4).should(have.texts('Mobile', student.phone_number))
+    cells_of_row(4).should(have.texts('Mobile', student.mobile_number))
     cells_of_row(5).should(have.texts('Date of Birth', f'0{student.birth_day} {birth_month},{student.birth_year}'))
     cells_of_row(6).should(have.texts('Subjects', f'{student.subject_math}, {student.subject_computer_science}'))
     cells_of_row(7).should(have.texts('Hobbies', 'Sports, Reading, Music'))
