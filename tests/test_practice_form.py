@@ -1,3 +1,5 @@
+import time
+
 from selene import have, command
 from selene.support.shared import browser
 from demoqa_tests.utils import path_to
@@ -68,8 +70,7 @@ def test_student_registration_form():
     browser.element("#lastName").type(student.last_name)
     browser.element("#userEmail").type(student.user_email)
 
-    male = browser.element(f"[for*='gender-radio-{student.gender}']")
-    male.click()
+    browser.element(f"[for='gender-radio-{student.gender}']").click()
 
     browser.element("#userNumber").type(student.mobile_number)
 
@@ -81,23 +82,26 @@ def test_student_registration_form():
     browser.element("#subjectsInput").type(student.subject_math).press_enter()
     browser.element("#subjectsInput").type(student.subject_computer_science).press_enter()
 
-    hobbies_sport = browser.element("label[for='hobbies-checkbox-1']")
-    hobbies_sport.click()
-    hobbies_reading = browser.element("label[for='hobbies-checkbox-2']")
-    hobbies_reading.click()
-    hobbies_music = browser.element("label[for='hobbies-checkbox-3']")
-    hobbies_music.click()
+    def checkbox_click(selector):
+        browser.element(selector).click()
+
+
+    checkbox_click("label[for='hobbies-checkbox-1']")
+    checkbox_click("label[for='hobbies-checkbox-2']")
+    checkbox_click("label[for='hobbies-checkbox-3']")
+
 
     browser.element('#uploadPicture').send_keys(path_to(student.picture_name))
 
     browser.element("#currentAddress").type(student.current_address)
 
     browser.element("#state").element("input").perform(command.js.scroll_into_view)
-    state_uttar_pradesh = browser.element("#state").element("input").type(student.state)
-    state_uttar_pradesh.press_tab()
 
-    city_lucknow = browser.element("#city input").type(student.city)
-    city_lucknow.press_enter()
+    def selector_input(selector, text):
+        browser.element(selector).element("input").type(text).press_tab()
+
+    selector_input("#state", student.state)
+    selector_input("#city", student.city)
 
     browser.element("#submit").perform(command.js.click)
 
@@ -118,5 +122,3 @@ def test_student_registration_form():
     cells_of_row(8).should(have.texts('Picture', student.picture_name))
     cells_of_row(9).should(have.texts('Address', student.current_address))
     cells_of_row(10).should(have.texts('State and City', f'{student.state} {student.city}'))
-
-
